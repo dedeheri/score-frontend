@@ -5,4 +5,5 @@ export default axios.create({
       ? process.env.REACT_APP_URL_API_DEVELOPMENT
       : process.env.REACT_APP_URL_API_PRODUCTION,
   withCredentials: true,
+  credentials: "include",
 });

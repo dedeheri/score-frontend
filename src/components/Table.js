@@ -1,7 +1,7 @@
 import { confirmAlert } from "react-confirm-alert";
 import { useDispatch } from "react-redux";
-import { setDelateSchedule, setSchedule } from "../context/action/staff-action";
-import { createSearchParams, useLocation, useNavigate } from "react-router-dom";
+import { setDelateSchedule } from "../context/action/staff-action";
+import { createSearchParams, useNavigate } from "react-router-dom";
 
 // UI
 import { FiEdit3, FiTrash } from "react-icons/fi";
@@ -9,7 +9,6 @@ import { FiEdit3, FiTrash } from "react-icons/fi";
 const Table = ({ columnName, data, on }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { search } = useLocation();
 
   const handleUpdate = (scheduleId) => {
     navigate({
@@ -29,7 +28,6 @@ const Table = ({ columnName, data, on }) => {
           label: "Iya",
           onClick: () => {
             dispatch(setDelateSchedule(id));
-            dispatch(setSchedule(search));
           },
         },
         {

@@ -9,15 +9,18 @@ import Input from "../../Input";
 
 import { Listbox, Transition } from "@headlessui/react";
 import { SelectorIcon } from "@heroicons/react/solid";
+import Spin from "../../Spin";
 
-function AddStudentItem() {
+import * as actionType from "../../../context/actionType/actionTypeStaff";
+
+function AddStudentItem({ setAddSlide }) {
   const dispatch = useDispatch();
-  const { data: classLists, isFetching } = useSelector(
-    (state) => state.classRoomList
-  );
-  const { validationMessage, errorMessage } = useSelector(
-    (state) => state.student
-  );
+  const {
+    GET: { data: classLists, loading },
+  } = useSelector((state) => state.classRoomList);
+  const {
+    ADD: { data, error, fetching },
+  } = useSelector((state) => state.student);
 
   const [fullName, setFullName] = useState("");
   const [classRoom, setClassRoom] = useState("");
@@ -50,128 +53,131 @@ function AddStudentItem() {
     );
   };
 
+  useEffect(() => {
+    if (data?.message?.length > 0) {
+      setAddSlide(false);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    return () => dispatch({ type: actionType.REMOVE_ADD_STUDENT });
+  }, []);
+
   return (
-    <>
-      <div className="space-y-3">
-        {/* error */}
-        {validationMessage && (
-          <div className="space-y-2">
-            {validationMessage.map((s, i) => (
-              <p
-                key={i}
-                className="bg-red-200 p-1 px-4 font-semibold rounded-lg"
-              >
-                {s.msg}
-              </p>
-            ))}
-          </div>
-        )}
+    <form onSubmit={handleAddStudent} className="space-y-3">
+      {/* error */}
 
-        {errorMessage && (
-          <div className="space-y-2">
-            <p className="bg-red-200 p-1 px-4 font-semibold rounded-lg">
-              {errorMessage}
+      {error?.validation && (
+        <div className="space-y-2">
+          {error?.validation.map((s, i) => (
+            <p key={i} className="bg-red-200 p-1 px-4 font-semibold rounded-lg">
+              {s.msg}
             </p>
+          ))}
+        </div>
+      )}
+      {error?.message && (
+        <h1 className="bg-red-200 p-1 px-4 font-semibold rounded-lg">
+          {error?.message}
+        </h1>
+      )}
+
+      <Input
+        onChange={(e) => setFullName(e.target.value)}
+        title={"Nama Lengkap"}
+        placeholder={"Nama Lengkap"}
+        type={"text"}
+      />
+
+      <Listbox value={classRoom} onChange={setClassRoom}>
+        <div className="relative">
+          <div className="block text-lg mb-1 font-medium text-gray-700 font-roboto">
+            Kelas
           </div>
-        )}
+          <Listbox.Button className="relative h-11 w-full py-2 pl-3 pr-10 text-left bg-white rounded-lg border cursor-default focus:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-white focus-visible:ring-offset-orange-300 focus-visible:ring-offset-2 focus-visible:border-indigo-500 sm:text-sm">
+            <span className="block truncate">
+              {loading ? "Loading..." : classRoom}
+            </span>
+            <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+              <SelectorIcon
+                className="w-5 h-5 text-gray-400"
+                aria-hidden="true"
+              />
+            </span>
+          </Listbox.Button>
 
-        <Input
-          onChange={(e) => setFullName(e.target.value)}
-          title={"Nama Lengkap"}
-          placeholder={"Nama Lengkap"}
-          type={"text"}
-        />
-
-        <Listbox value={classRoom} onChange={setClassRoom}>
-          <div className="relative">
-            <div className="block text-lg mb-1 font-medium text-gray-700 font-roboto">
-              Kelas
-            </div>
-            <Listbox.Button className="relative h-11 w-full py-2 pl-3 pr-10 text-left bg-white rounded-lg border cursor-default focus:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-white focus-visible:ring-offset-orange-300 focus-visible:ring-offset-2 focus-visible:border-indigo-500 sm:text-sm">
-              <span className="block truncate">
-                {isFetching ? "Loading..." : classRoom}
-              </span>
-              <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                <SelectorIcon
-                  className="w-5 h-5 text-gray-400"
-                  aria-hidden="true"
-                />
-              </span>
-            </Listbox.Button>
-
-            <Transition
-              as={Fragment}
-              leave="transition ease-in duration-100"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0"
-            >
-              <Listbox.Options className="absolute w-full z-50 py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-xl max-h-80 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                {classLists?.result?.map((classList, index) => (
-                  <Listbox.Option
-                    key={index}
-                    className={({ active }) =>
-                      `${active ? "text-gray-900 bg-gray-100" : "text-gray-900"}
+          <Transition
+            as={Fragment}
+            leave="transition ease-in duration-100"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <Listbox.Options className="absolute w-full z-50 py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-xl max-h-80 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+              {classLists?.result?.map((classList, index) => (
+                <Listbox.Option
+                  key={index}
+                  className={({ active }) =>
+                    `${active ? "text-gray-900 bg-gray-100" : "text-gray-900"}
                       cursor-default select-none relative py-2 pl-4 pr-4`
-                    }
-                    value={classList?.classRoom}
-                  >
-                    {({ active }) => (
-                      <>
-                        <span
-                          className={`${
-                            active ? "font-medium" : "font-normal"
-                          } block truncate`}
-                        >
-                          {classList?.classRoom}
-                        </span>
-                      </>
-                    )}
-                  </Listbox.Option>
-                ))}
-              </Listbox.Options>
-            </Transition>
-          </div>
-        </Listbox>
+                  }
+                  value={classList?.classRoom}
+                >
+                  {({ active }) => (
+                    <>
+                      <span
+                        className={`${
+                          active ? "font-medium" : "font-normal"
+                        } block truncate`}
+                      >
+                        {classList?.classRoom}
+                      </span>
+                    </>
+                  )}
+                </Listbox.Option>
+              ))}
+            </Listbox.Options>
+          </Transition>
+        </div>
+      </Listbox>
 
-        <Input
-          onChange={(e) => setIdentityNumber(e.target.value)}
-          title={"No Indentitas"}
-          placeholder={"No Indentitas"}
-          type={"text"}
-        />
-        <Input
-          onChange={(e) => setStreet(e.target.value)}
-          title={"Jalan"}
-          placeholder={"Jalan"}
-          type={"text"}
-        />
-        <Input
-          onChange={(e) => setCity(e.target.value)}
-          title={"Kota"}
-          placeholder={"Kota"}
-          type={"text"}
-        />
-        <Input
-          onChange={(e) => setProvince(e.target.value)}
-          title={"Provinsi"}
-          placeholder={"Provinsi"}
-          type={"text"}
-        />
-        <Input
-          onChange={(e) => setPostelCode(e.target.value)}
-          title={"Kode Pos"}
-          placeholder={"Kode Pos"}
-          type={"number"}
-        />
-      </div>
+      <Input
+        onChange={(e) => setIdentityNumber(e.target.value)}
+        title={"No Indentitas"}
+        placeholder={"No Indentitas"}
+        type={"number"}
+      />
+      <Input
+        onChange={(e) => setStreet(e.target.value)}
+        title={"Jalan"}
+        placeholder={"Jalan"}
+        type={"text"}
+      />
+      <Input
+        onChange={(e) => setCity(e.target.value)}
+        title={"Kota"}
+        placeholder={"Kota"}
+        type={"text"}
+      />
+      <Input
+        onChange={(e) => setProvince(e.target.value)}
+        title={"Provinsi"}
+        placeholder={"Provinsi"}
+        type={"text"}
+      />
+      <Input
+        onChange={(e) => setPostelCode(e.target.value)}
+        title={"Kode Pos"}
+        placeholder={"Kode Pos"}
+        type={"number"}
+      />
       <div className="flex justify-end">
-        <Button
-          onClick={handleAddStudent}
-          width={"md:w-1/2 w-full mt-10"}
-          title={"Tambahkan"}
-        />
+        {fetching ? (
+          <Spin width={"md:w-1/2 w-full mt-10"} />
+        ) : (
+          <Button width={"md:w-1/2 w-full mt-10"} title={"Tambahkan"} />
+        )}
       </div>
-    </>
+    </form>
   );
 }
 

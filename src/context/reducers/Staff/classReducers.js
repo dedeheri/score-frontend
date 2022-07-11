@@ -156,6 +156,13 @@ const classRoomList = (state = initialState, action) => {
         },
       };
     }
+    case actionType.REMOVE_UPDATE_DATA_CLASSROOM: {
+      return {
+        ...state,
+        UPDATE: {},
+      };
+    }
+
     default:
       return state;
   }

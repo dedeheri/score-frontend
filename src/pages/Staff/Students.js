@@ -24,30 +24,25 @@ function Students() {
 
   const dispatch = useDispatch();
   const {
-    getData: { data: students, page, loading, loadingBar },
-    refreshPage,
+    DELETE: { data: messageDelete },
+    GET: { data, loading, loadingBar },
+    ADD: { data: dataAdd },
   } = useSelector((state) => state.student);
 
   // get Data
   const { search } = useLocation();
   useEffect(() => {
     dispatch(setStudent(search));
-  }, [search]);
-
-  useEffect(() => {
-    if (refreshPage == true) {
-      window.location.reload();
-    }
-  }, [refreshPage]);
+  }, [dispatch, search, dataAdd, messageDelete]);
 
   // search
   useEffect(() => {
-    const filtered = students?.result?.filter((n) =>
+    const filtered = data?.result?.filter((n) =>
       n.fullName.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     setStudentList(filtered);
-  }, [students, searchTerm]);
+  }, [data, searchTerm]);
 
   const columnName = ["Kode Siswa", "No Indititas", "Nama", "Kelas", "Alamat"];
   return (
@@ -64,7 +59,7 @@ function Students() {
             setAddSlide={setAddSlide}
             title={"Tambah Siswa"}
           >
-            <AddStudentItem />
+            <AddStudentItem setAddSlide={setAddSlide} />
           </Add>
         </div>
       </div>
@@ -76,7 +71,7 @@ function Students() {
         ) : (
           <div className="space-y-3">
             <TableStudent columnName={columnName} list={studentList} />
-            <Pagination page={page} />
+            <Pagination page={data?.page} />
           </div>
         )}
       </div>

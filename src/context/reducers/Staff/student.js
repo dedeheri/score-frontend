@@ -1,165 +1,158 @@
-import {
-  GET_DATA_STUDENT,
-  FAILED_GET_DATA_STUDENT,
-  GET_DETAIL_STUDENT,
-  FAILED_GET_DETAIL_STUDENT,
-  REMOVE_GET_DETAIL_STUDENT,
-  DELETE_DATA_STUDENT,
-  FAILED_DELETE_DATA_STUDENT,
-  ADD_DATA_STUDENT,
-  FAILED_ADD_DATA_STUDENT_VALIDATION,
-  FAILED_ADD_DATA_STUDENT_MESSAGE_ERROR,
-  FAILED_UPDATE_STUDENT_VALIDATION,
-  FAILED_UPDATE_STUDENT_MESSAGE_ERROR,
-  SUCCESS_UPDATE_STUDENT,
-} from "../../action/action-type";
+import * as actionType from "../../actionType/actionTypeStaff";
 
 const initialState = {
-  data: [],
-  error: "",
-  loadingBar: 0,
-  isFetching: true,
-  dataDetail: [],
-  isFetchingUpdate: true,
-  dataDelete: "",
-  validationMessage: "",
-  errorMessage: "",
-  dataAdd: [],
-  refreshPage: null,
-  validationMessageUpdate: "",
-  errorMessageUpdate: "",
-  dataUpdate: "",
-
-  // get Data
-  getData: {
+  UPDATE: {
+    fetching: false,
     data: [],
     error: [],
-    loading: [],
-    page: {},
+  },
+
+  DETAIL: {
+    loading: true,
+    loadingBar: 0,
+    data: [],
+    error: [],
+  },
+
+  GET: {
+    data: [],
+    error: [],
+    loading: true,
+    loadingBar: 0,
+  },
+  ADD: {
+    data: [],
+    error: [],
+    fetching: false,
+    slide: true,
+  },
+  DELETE: {
+    data: [],
+    error: [],
   },
 };
 
 const student = (state = initialState, action) => {
   switch (action.type) {
-    case GET_DATA_STUDENT: {
+    // GET
+    case actionType.GET_DATA_STUDENT: {
       return {
         ...state,
-        loadingBar: 100,
-        getData: {
-          ...state.getData,
+        GET: {
           data: action.payload,
-          page: action.page,
           loading: false,
+          loadingBar: 100,
         },
       };
     }
-    case FAILED_GET_DATA_STUDENT: {
+    case actionType.FAILED_GET_DATA_STUDENT: {
       return {
         ...state,
-        loadingBar: 100,
-        getData: {
-          ...state.getData,
+        GET: {
           error: action.payload,
           loading: false,
+          loadingBar: 100,
         },
       };
     }
-    case GET_DETAIL_STUDENT: {
+
+    // detail
+    case actionType.GET_DETAIL_STUDENT: {
       return {
         ...state,
-        loading: true,
-        loadingBar: 100,
-        dataDetail: action.data,
-        isFetchingUpdate: false,
+        DETAIL: { loading: false, loadingBar: 100, data: action.payload },
       };
     }
-    case FAILED_GET_DETAIL_STUDENT: {
+    case actionType.FAILED_GET_DETAIL_STUDENT: {
       return {
         ...state,
-        loading: true,
-        loadingBar: 100,
-        error: action.error,
-        isFetchingUpdate: false,
+        DETAIL: { loading: false, loadingBar: 100, error: action.payload },
       };
     }
-    case REMOVE_GET_DETAIL_STUDENT: {
+    case actionType.REMOVE_GET_DETAIL_STUDENT: {
       return {
         ...state,
-        loading: true,
-        loadingBar: 100,
-        dataDetail: {},
-        isFetchingUpdate: {},
-        getData: {
-          ...state,
-          data: {},
+        DETAIL: {},
+      };
+    }
+
+    // delate
+    case actionType.DELETE_DATA_STUDENT: {
+      return {
+        ...state,
+        GET: { loading: true },
+        DELETE: { data: action.payload },
+      };
+    }
+
+    case actionType.FAILED_DELETE_DATA_STUDENT: {
+      return {
+        ...state,
+        DELETE: { error: action.payload },
+      };
+    }
+
+    // add
+    case actionType.START_ADD_STUDENT: {
+      return {
+        ...state,
+        ADD: { fetching: true },
+      };
+    }
+    case actionType.ADD_STUDENT: {
+      return {
+        ...state,
+        GET: { loading: true },
+        ADD: { fetching: false, data: action.payload, slide: true },
+      };
+    }
+    case actionType.FAILED_ADD_STUDENT: {
+      return {
+        ...state,
+        ADD: { fetching: false, error: action.payload, slide: false },
+      };
+    }
+    case actionType.REMOVE_ADD_STUDENT: {
+      return {
+        ...state,
+        ADD: {},
+      };
+    }
+
+    // update
+    case actionType.START_UPDATE_DATA_STUDENT: {
+      return {
+        ...state,
+        UPDATE: {
+          fetching: true,
         },
       };
     }
-    case DELETE_DATA_STUDENT: {
+    case actionType.SUCCESS_UPDATE_DATA_STUDENT: {
       return {
         ...state,
-        loadingBar: 100,
-        dataDelete: action.payload,
-        isFetching: false,
+        UPDATE: {
+          data: action.payload,
+          fetching: false,
+        },
       };
     }
-    case FAILED_DELETE_DATA_STUDENT: {
+    case actionType.FAILED_UPDATE_DATA_STUDENT: {
       return {
         ...state,
-        loadingBar: 100,
-        error: action.error,
-        isFetching: false,
+        UPDATE: {
+          error: action.payload,
+          fetching: false,
+        },
       };
     }
-    case ADD_DATA_STUDENT: {
+    case actionType.REMOVE_UPDATE_DATA_STUDENT: {
       return {
         ...state,
-        isFetching: false,
-        dataAdd: action.payload,
-        loadingBar: 100,
-        refreshPage: true,
+        UPDATE: {},
       };
     }
-    case FAILED_ADD_DATA_STUDENT_VALIDATION: {
-      return {
-        ...state,
-        isFetching: false,
-        validationMessage: action.error,
-        loadingBar: 100,
-      };
-    }
-    case FAILED_ADD_DATA_STUDENT_MESSAGE_ERROR: {
-      return {
-        ...state,
-        isFetching: false,
-        errorMessage: action.error,
-        loadingBar: 100,
-      };
-    }
-    case FAILED_UPDATE_STUDENT_VALIDATION: {
-      return {
-        ...state,
-        isFetching: false,
-        validationMessageUpdate: action.error,
-        loadingBar: 100,
-      };
-    }
-    case FAILED_UPDATE_STUDENT_MESSAGE_ERROR: {
-      return {
-        ...state,
-        isFetching: false,
-        errorMessageUpdate: action.error,
-        loadingBar: 100,
-      };
-    }
-    case SUCCESS_UPDATE_STUDENT: {
-      return {
-        ...state,
-        isFetching: false,
-        dataUpdate: action.data,
-        loadingBar: 100,
-      };
-    }
+
     default:
       return state;
   }

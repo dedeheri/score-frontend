@@ -1,14 +1,13 @@
-import { createSearchParams, useLocation, useNavigate } from "react-router-dom";
+import { createSearchParams, useNavigate } from "react-router-dom";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import { confirmAlert } from "react-confirm-alert";
 import { useDispatch } from "react-redux";
-import { setDeleteStudent, setStudent } from "../context/action/staff-action";
+import { setDeleteStudent } from "../context/action/staff-action";
 import { FiEdit3, FiTrash } from "react-icons/fi";
 
 function TableStudent({ columnName, list }) {
   const dispatch = useDispatch();
   const router = useNavigate();
-  const { search } = useLocation();
   const handleDetail = (id, fullName) => {
     router({
       pathname: "/staff/student/detail",
@@ -38,7 +37,6 @@ function TableStudent({ columnName, list }) {
           label: "Yes",
           onClick: () => {
             dispatch(setDeleteStudent(id));
-            dispatch(setStudent(search));
           },
         },
         {

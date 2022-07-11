@@ -1,32 +1,6 @@
-import {
-  ADD_SCHEDULE,
-  DELETE_SCHEDULE,
-  FAILED_ADD_SCHEDULE,
-  FAILED_DELETE_SCHEDULE,
-  FAILED_GET_DATA_SCHEDULE,
-  FAILED_UPDATE_DETAILS_SCHEDULE,
-  GET_DATA_SCHEDULE,
-  GET_DETAILS_SCHEDULE,
-  REMOVE_ADD_SCHEDULE,
-  REMOVE_UPDATE_DETAILS_SCHEDULE,
-  REQUEST_DETAIL_SCHEDULE,
-} from "../../action/action-type";
-
 import * as actionType from "../../actionType/actionTypeStaff";
 
 const initialState = {
-  getData: {
-    data: {},
-    error: [],
-    page: {},
-  },
-
-  postData: {
-    message: [],
-    error: "",
-    slide: true,
-  },
-
   GET: {
     data: [],
     error: [],
@@ -34,18 +8,27 @@ const initialState = {
     loading: true,
   },
 
-  data: [],
-  error: [],
-  loadingBar: 0,
-  isFetching: true,
-  refreshPage: null,
-  dataUpdate: [],
+  UPDATE: {
+    data: [],
+    error: [],
+    fetching: false,
+  },
 
+  DETAIL: {
+    data: [],
+    error: [],
+    loading: true,
+    loadingBar: 0,
+  },
   ADD: {
     message: [],
     error: [],
     slide: true,
     fetching: false,
+  },
+  DELETE: {
+    message: [],
+    error: [],
   },
 };
 
@@ -113,53 +96,79 @@ const schedule = (state = initialState, action) => {
     }
 
     // delete
-    case DELETE_SCHEDULE: {
+    case actionType.DELETE_SCHEDULE: {
       return {
         ...state,
-        isFetching: false,
-        loadingBar: 100,
-        data: action.payload,
+        GET: { loading: true },
+        DELETE: {
+          message: action.payload,
+        },
       };
     }
-    case FAILED_DELETE_SCHEDULE: {
+    case actionType.FAILED_DELETE_SCHEDULE: {
       return {
         ...state,
-        loadingBar: 100,
-        isFetching: false,
-        error: action.error,
+        DELETE: {
+          error: action.payload,
+        },
       };
     }
-    case REQUEST_DETAIL_SCHEDULE: {
+
+    // detail
+    case actionType.GET_DETAIL_SCHEDULE: {
       return {
         ...state,
-        loadingBar: 100,
-        isFetching: true,
+        DETAIL: { data: action.payload, loading: false, loadingBar: 100 },
       };
     }
-    case GET_DETAILS_SCHEDULE: {
+    case actionType.FAILED_GET_DETAIL_SCHEDULE: {
       return {
         ...state,
-        loadingBar: 100,
-        isFetching: false,
-        dataUpdate: action.payload,
+        DETAIL: { error: action.payload, loading: false, loadingBar: 100 },
       };
     }
-    case FAILED_UPDATE_DETAILS_SCHEDULE: {
+    case actionType.REMOVE_GET_DETAIL_SCHEDULE: {
       return {
         ...state,
-        loadingBar: 100,
-        isFetching: false,
-        error: action.error,
+        DETAIL: {},
       };
     }
-    case REMOVE_UPDATE_DETAILS_SCHEDULE: {
+
+    // update
+    case actionType.START_UPDATE_DATA_SCHEDULE: {
       return {
         ...state,
-        loadingBar: 100,
-        isFetching: false,
-        dataUpdate: {},
+        UPDATE: {
+          fetching: true,
+        },
       };
     }
+    case actionType.SUCCESS_UPDATE_DATA_SCHEDULE: {
+      return {
+        ...state,
+        GET: { loading: true },
+        UPDATE: {
+          data: action.payload,
+          fetching: false,
+        },
+      };
+    }
+    case actionType.FAILED_UPDATE_DATA_SCHEDULE: {
+      return {
+        ...state,
+        UPDATE: {
+          error: action.payload,
+          fetching: false,
+        },
+      };
+    }
+    case actionType.REMOVE_UPDATE_DATA_SCHEDULE: {
+      return {
+        ...state,
+        UPDATE: {},
+      };
+    }
+
     default:
       return state;
   }

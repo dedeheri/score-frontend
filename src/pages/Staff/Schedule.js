@@ -24,6 +24,7 @@ import NoData from "../../components/NoData";
 function Schedule() {
   const {
     GET: { data, loading, loadingBar },
+    DELETE: { message },
   } = useSelector((state) => state.schedule);
 
   const on = true;
@@ -32,7 +33,7 @@ function Schedule() {
 
   useEffect(() => {
     dispatch(setSchedule(search));
-  }, [dispatch, search]);
+  }, [dispatch, search, message]);
 
   const [scheduleList, setScheduleList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");

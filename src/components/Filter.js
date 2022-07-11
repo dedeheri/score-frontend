@@ -11,7 +11,9 @@ function Filter({ extend }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { data: classRooms } = useSelector((state) => state.classRoomList);
+  const {
+    GET: { data: classRooms },
+  } = useSelector((state) => state.classRoomList);
   useEffect(() => {
     dispatch(setClassRoomList("?sort=-1"));
   }, []);

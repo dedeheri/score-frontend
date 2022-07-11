@@ -2,14 +2,8 @@ import Cookies from "js-cookie";
 import apis from "../../api/apis";
 import { toast } from "react-toastify";
 import {
-  GET_DATA_STUDENT,
-  FAILED_GET_DATA_STUDENT,
   GET_DATA_ACTIVITY,
   FAILED_GET_DATA_ACTIVITY,
-  GET_DATA_SCHEDULE,
-  FAILED_GET_DATA_SCHEDULE,
-  ADD_SCHEDULE,
-  FAILED_ADD_SCHEDULE,
   DELETE_SCHEDULE,
   FAILED_DELETE_SCHEDULE,
   GET_DATA_TEACHER,
@@ -22,22 +16,10 @@ import {
   DELETE_DATA_TEACHER,
   GET_DATA_CLASSROOM,
   FAILED_GET_DATA_CLASSROM,
-  GET_DETAILS_SCHEDULE,
-  FAILED_UPDATE_DETAILS_SCHEDULE,
   REQUEST_DETAIL_SCHEDULE,
   SUCCESS_UPDATE_TEACHER,
   FAILED_UPDATE_TEACHER_VALIDATION,
   FAILED_UPDATE_TEACHER_MESSAGE,
-  GET_DETAIL_STUDENT,
-  FAILED_GET_DETAIL_STUDENT,
-  DELETE_DATA_STUDENT,
-  FAILED_DELETE_DATA_STUDENT,
-  ADD_DATA_STUDENT,
-  FAILED_ADD_DATA_STUDENT_VALIDATION,
-  FAILED_ADD_DATA_STUDENT_MESSAGE_ERROR,
-  FAILED_UPDATE_STUDENT_VALIDATION,
-  FAILED_UPDATE_STUDENT_MESSAGE_ERROR,
-  SUCCESS_UPDATE_STUDENT,
   GET_DATA_ACCOUNT,
   FAILED_GET_DATA_ACCOUNT,
   FAILED_CONFIRMASTION_ACCOUNT,
@@ -178,7 +160,7 @@ export const setDelateSchedule = (id) => {
           authorization: `Bearer ${Cookies.get("secure-To")}`,
         },
       });
-      dispatch({ type: DELETE_SCHEDULE, payload: data.message });
+      dispatch({ type: DELETE_SCHEDULE, payload: data });
       toast.success("Berhasil Hapus Data");
     } catch (error) {
       dispatch({
@@ -192,25 +174,28 @@ export const setDelateSchedule = (id) => {
 export const setDetailOneSchedule = (query) => async (dispatch) => {
   dispatch({ type: REQUEST_DETAIL_SCHEDULE });
   try {
-    const { data } = await apis.get(`staff/schedule/detail${query}`, {
-      headers: {
-        "Content-type": "Application/json",
-        authorization: `Bearer ${Cookies.get("secure-To")}`,
-      },
-    });
-    dispatch({ type: GET_DETAILS_SCHEDULE, payload: data });
+    const { data } = await apis.get(`staff/schedule/detail${query}`, config);
+    dispatch({ type: actionType.GET_DETAIL_SCHEDULE, payload: data });
   } catch (error) {
     dispatch({
-      type: FAILED_UPDATE_DETAILS_SCHEDULE,
-      error: error.response.data.message,
+      type: actionType.FAILED_GET_DETAIL_SCHEDULE,
+      payload: error.response.data.message,
     });
   }
 };
 
-export const setUpdateSchedule = (search, course, classRoom, day, time) => {
+export const setUpdateSchedule = (
+  search,
+  course,
+  classRoom,
+  day,
+  time,
+  navigate
+) => {
   return async (dispatch) => {
     try {
-      await apis.put(
+      dispatch({ type: actionType.START_UPDATE_DATA_SCHEDULE });
+      const { data } = await apis.put(
         `staff/schedule/update${search}`,
         {
           course,
@@ -218,15 +203,17 @@ export const setUpdateSchedule = (search, course, classRoom, day, time) => {
           day,
           time,
         },
-        {
-          config,
-        }
+        config
       );
-      toast.success("Berhasil Update Data");
+      dispatch({
+        type: actionType.SUCCESS_UPDATE_DATA_SCHEDULE,
+        payload: data,
+      });
+      navigate("/staff/schedule");
     } catch (error) {
       dispatch({
-        type: FAILED_UPDATE_DETAILS_SCHEDULE,
-        error: error.response.data.message,
+        type: actionType.FAILED_UPDATE_DATA_SCHEDULE,
+        payload: error.response.data,
       });
     }
   };
@@ -234,16 +221,14 @@ export const setUpdateSchedule = (search, course, classRoom, day, time) => {
 
 export const setStudent = (search) => async (dispatch) => {
   try {
-    const { data } = await apis.get(`/staff/student${search}`, {
-      headers: {
-        "Content-type": "Application/json",
-        authorization: `Bearer ${Cookies.get("secure-To")}`,
-      },
-    });
+    const { data } = await apis.get(`/staff/student${search}`, config);
 
-    dispatch({ type: GET_DATA_STUDENT, payload: data, page: data.page });
+    dispatch({ type: actionType.GET_DATA_STUDENT, payload: data });
   } catch (error) {
-    dispatch({ type: FAILED_GET_DATA_STUDENT, error: error.response });
+    dispatch({
+      type: actionType.FAILED_GET_DATA_STUDENT,
+      error: error.response.data,
+    });
   }
 };
 
@@ -331,6 +316,7 @@ export const setUpdateClass = (id, homeRoomTeacher, classRoom, navigate) => {
         type: actionType.SUCCESS_UPDATE_DATA_CLASSROOM,
         payload: data,
       });
+
       toast.success("Berhasil Update Data");
       navigate("/staff/class");
     } catch (error) {
@@ -406,20 +392,13 @@ export const setUpdateTeacher = (
 
 export const setDetailStudent = (search) => {
   return async (dispatch) => {
-    const config = {
-      headers: {
-        "Content-type": "Application/json",
-        authorization: `Bearer ${Cookies.get("secure-To")}`,
-      },
-    };
-
     try {
       const { data } = await apis.get(`staff/student/detail${search}`, config);
-      dispatch({ type: GET_DETAIL_STUDENT, data: data });
+      dispatch({ type: actionType.GET_DETAIL_STUDENT, payload: data });
     } catch (error) {
       dispatch({
-        type: FAILED_GET_DETAIL_STUDENT,
-        error: error.response.data.message,
+        type: actionType.FAILED_GET_DETAIL_STUDENT,
+        payload: error.response.data,
       });
     }
   };
@@ -427,21 +406,14 @@ export const setDetailStudent = (search) => {
 
 export const setDeleteStudent = (id) => {
   return async (dispatch) => {
-    const config = {
-      headers: {
-        "Content-type": "Application/json",
-        authorization: `Bearer ${Cookies.get("secure-To")}`,
-      },
-    };
-
     try {
       const { data } = await apis.delete(`/staff/student/${id}`, config);
-      dispatch({ type: DELETE_DATA_STUDENT, data: data });
+      dispatch({ type: actionType.DELETE_DATA_STUDENT, payload: data });
       toast.success("Berhasil Hapus Data");
     } catch (error) {
       dispatch({
-        type: FAILED_DELETE_DATA_STUDENT,
-        error: error.response.data.message,
+        type: actionType.FAILED_DELETE_DATA_STUDENT,
+        payload: error.response.data.message,
       });
     }
   };
@@ -457,14 +429,8 @@ export const setAddStudent = (
   postelCode
 ) => {
   return async (dispatch) => {
-    const config = {
-      headers: {
-        "Content-type": "Application/json",
-        authorization: `Bearer ${Cookies.get("secure-To")}`,
-      },
-    };
-
     try {
+      dispatch({ type: actionType.START_ADD_STUDENT });
       const { data } = await apis.post(
         "/staff/student/add-student",
         {
@@ -479,17 +445,13 @@ export const setAddStudent = (
         config
       );
 
-      dispatch({ type: ADD_DATA_STUDENT, payload: data });
+      dispatch({ type: actionType.ADD_STUDENT, payload: data });
+      toast.success("Berhasil Tambah Data");
     } catch (error) {
-      const er = error.response.data.errors;
-      if (er) {
-        dispatch({ type: FAILED_ADD_DATA_STUDENT_VALIDATION, error: er });
-      } else {
-        dispatch({
-          type: FAILED_ADD_DATA_STUDENT_MESSAGE_ERROR,
-          error: error.response.data.message,
-        });
-      }
+      dispatch({
+        type: actionType.FAILED_ADD_STUDENT,
+        payload: error.response.data,
+      });
     }
   };
 };
@@ -505,14 +467,8 @@ export const setUpdateStudent = (
   postelCode
 ) => {
   return async (dispatch) => {
-    const config = {
-      headers: {
-        "Content-type": "Application/json",
-        authorization: `Bearer ${Cookies.get("secure-To")}`,
-      },
-    };
-
     try {
+      dispatch({ type: actionType.START_UPDATE_DATA_STUDENT });
       const { data } = await apis.put(
         `/staff/student/${search}`,
         {
@@ -526,18 +482,13 @@ export const setUpdateStudent = (
         },
         config
       );
-      dispatch({ type: SUCCESS_UPDATE_STUDENT, data: data });
+      dispatch({ type: actionType.SUCCESS_UPDATE_DATA_STUDENT, payload: data });
       toast.success("Berhasil Update Data");
     } catch (error) {
-      const err = error.response.data.errors;
-      if (err) {
-        dispatch({ type: FAILED_UPDATE_STUDENT_VALIDATION, error: err });
-      } else {
-        dispatch({
-          type: FAILED_UPDATE_STUDENT_MESSAGE_ERROR,
-          error: error.response.data.message,
-        });
-      }
+      dispatch({
+        type: actionType.FAILED_UPDATE_DATA_STUDENT,
+        payload: error.response.data,
+      });
     }
   };
 };

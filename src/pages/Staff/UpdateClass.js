@@ -40,7 +40,10 @@ function UpdateClass() {
 
   useEffect(() => {
     return () => dispatch({ type: actionType.REMOVE_DETAIL_CLASSROOM });
-  }, [dispatch]);
+  }, []);
+  useEffect(() => {
+    return () => dispatch({ type: actionType.REMOVE_UPDATE_DATA_CLASSROOM });
+  }, []);
 
   const [homeRoomTeacher, setHomeRoomTeacher] = useState("");
   const [classRoom, setClassRoom] = useState("");

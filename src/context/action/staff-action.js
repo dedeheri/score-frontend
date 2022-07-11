@@ -22,18 +22,9 @@ import {
   DELETE_DATA_TEACHER,
   GET_DATA_CLASSROOM,
   FAILED_GET_DATA_CLASSROM,
-  FAILED_ADD_DATA_CLASSROOM,
-  ADD_DATA_CLASSROOM,
-  DELETE_DATA_CLASSROM,
-  FAILED_DELETE_DATA_CLASSROM,
   GET_DETAILS_SCHEDULE,
   FAILED_UPDATE_DETAILS_SCHEDULE,
   REQUEST_DETAIL_SCHEDULE,
-  REQUEST_DETAIL_CLASSROOM,
-  GET_DETAIL_CLASSROOM,
-  FAILED_GET_DETAIL_CLASSROOM,
-  SUCCESS_UPDATE_CLASSROOM,
-  FAILED_UPDATE_CLASSROOM,
   SUCCESS_UPDATE_TEACHER,
   FAILED_UPDATE_TEACHER_VALIDATION,
   FAILED_UPDATE_TEACHER_MESSAGE,
@@ -56,12 +47,8 @@ import {
   SUCCESS_REGISTRASION_STAFF,
 } from "./action-type";
 
-const config = {
-  headers: {
-    "Content-type": "Application/json",
-    authorization: `Bearer ${Cookies.get("secure-To")}`,
-  },
-};
+import * as actionType from "../actionType/actionTypeStaff";
+import { config } from "../../config/headers";
 
 export const setHome = () => async (dispatch) => {
   try {
@@ -79,13 +66,12 @@ export const setSchedule = (search) => async (dispatch) => {
   try {
     const { data } = await apis.get(`/staff/schedule${search}`, config);
     dispatch({
-      type: GET_DATA_SCHEDULE,
-      page: { page: data.page },
-      payload: { data: data.result },
+      type: actionType.GET_DATA_SCHEDULE,
+      payload: data,
     });
   } catch (error) {
     dispatch({
-      type: FAILED_GET_DATA_SCHEDULE,
+      type: actionType.FAILED_GET_DATA_SCHEDULE,
       error: error.response.data.error,
     });
   }
@@ -94,6 +80,7 @@ export const setSchedule = (search) => async (dispatch) => {
 export const addSchedule =
   (teacherName, course, classRoom, day, time) => async (dispatch) => {
     try {
+      dispatch({ type: actionType.START_ADD_SCHEDULE });
       const { data } = await apis.post(
         "/staff/schedule/add-schedule",
         {
@@ -105,11 +92,11 @@ export const addSchedule =
         },
         config
       );
-      dispatch({ type: ADD_SCHEDULE, payload: data.message });
+      dispatch({ type: actionType.ADD_SCHEDULE, payload: data.message });
       toast.success("Berhasil Tambah Data");
     } catch (error) {
       dispatch({
-        type: FAILED_ADD_SCHEDULE,
+        type: actionType.FAILED_ADD_SCHEDULE,
         payload: error.response.data.errors,
       });
     }
@@ -151,12 +138,6 @@ export const setDetailTeacher = (search) => async (dispatch) => {
 export const addTeacher =
   (fullName, identityNumber, status, street, city, province, postelCode) =>
   async (dispatch) => {
-    const config = {
-      headers: {
-        "Content-type": "application/json",
-        authorization: `Bearer ${Cookies.get("secure-To")}`,
-      },
-    };
     try {
       await apis.post(
         "/staff/teacher/add-teacher",
@@ -165,7 +146,6 @@ export const addTeacher =
           identityNumber,
           status,
           street,
-          status,
           city,
           province,
           postelCode,
@@ -230,7 +210,7 @@ export const setDetailOneSchedule = (query) => async (dispatch) => {
 export const setUpdateSchedule = (search, course, classRoom, day, time) => {
   return async (dispatch) => {
     try {
-      const { data } = await apis.put(
+      await apis.put(
         `staff/schedule/update${search}`,
         {
           course,
@@ -239,10 +219,7 @@ export const setUpdateSchedule = (search, course, classRoom, day, time) => {
           time,
         },
         {
-          headers: {
-            "Content-type": "Application/json",
-            authorization: `Bearer ${Cookies.get("secure-To")}`,
-          },
+          config,
         }
       );
       toast.success("Berhasil Update Data");
@@ -306,25 +283,20 @@ export const setClassRoomList = (query) => async (dispatch) => {
 
 export const addClassRoom = (homeRoomTeacher, classRoom) => {
   return async (dispatch) => {
-    const config = {
-      headers: {
-        "Content-type": "Application/json",
-        authorization: `Bearer ${Cookies.get("secure-To")}`,
-      },
-    };
-
     try {
+      dispatch({ type: actionType.START_ADD_DATA_CLASSROOM });
+
       const { data } = await apis.post(
         "staff/class/add-class",
         { homeRoomTeacher, classRoom },
         config
       );
-      dispatch({ type: ADD_DATA_CLASSROOM, payload: data });
+      dispatch({ type: actionType.SUCCESS_ADD_DATA_CLASSROOM, payload: data });
       toast.success("Berhasil Tambah Data");
     } catch (error) {
       dispatch({
-        type: FAILED_ADD_DATA_CLASSROOM,
-        error: error.response.data,
+        type: actionType.FAILED_ADD_DATA_CLASSROOM,
+        payload: error.response.data,
       });
     }
   };
@@ -332,45 +304,39 @@ export const addClassRoom = (homeRoomTeacher, classRoom) => {
 
 export const setDeleteClassRoom = (id) => {
   return async (dispatch) => {
-    const config = {
-      headers: {
-        "Content-type": "Application/json",
-        authorization: `Bearer ${Cookies.get("secure-To")}`,
-      },
-    };
     try {
       const { data } = await apis.delete(`staff/class/${id}`, config);
-      dispatch({ type: DELETE_DATA_CLASSROM });
-      toast.success(data?.message);
+      dispatch({ type: actionType.DELETE_DATA_CLASSROM, payload: data });
+      toast.success("Berhasil Hapus Data");
     } catch (error) {
       dispatch({
-        type: FAILED_DELETE_DATA_CLASSROM,
-        error: error.response.data.message,
+        type: actionType.FAILED_DELETE_DATA_CLASSROM,
+        payload: error.response.data.message,
       });
     }
   };
 };
 
-export const setUpdateClass = (id, homeRoomTeacher, classRoom) => {
+export const setUpdateClass = (id, homeRoomTeacher, classRoom, navigate) => {
   return async (dispatch) => {
-    const config = {
-      headers: {
-        "Content-type": "Application/json",
-        authorization: `Bearer ${Cookies.get("secure-To")}`,
-      },
-    };
     try {
+      dispatch({ type: actionType.START_UPDATE_DATA_CLASSROOM });
+
       const { data } = await apis.put(
         `staff/class${id}`,
         { homeRoomTeacher, classRoom },
         config
       );
-      dispatch({ type: SUCCESS_UPDATE_CLASSROOM, payload: data });
+      dispatch({
+        type: actionType.SUCCESS_UPDATE_DATA_CLASSROOM,
+        payload: data,
+      });
       toast.success("Berhasil Update Data");
+      navigate("/staff/class");
     } catch (error) {
       dispatch({
-        type: FAILED_UPDATE_CLASSROOM,
-        error: error.response.data.errors,
+        type: actionType.FAILED_UPDATE_DATA_CLASSROOM,
+        payload: error.response.data,
       });
     }
   };
@@ -378,18 +344,14 @@ export const setUpdateClass = (id, homeRoomTeacher, classRoom) => {
 
 export const setDetailClass = (id) => {
   return async (dispatch) => {
-    dispatch({ type: REQUEST_DETAIL_CLASSROOM });
-    const config = {
-      headers: {
-        "Content-type": "Application/json",
-        authorization: `Bearer ${Cookies.get("secure-To")}`,
-      },
-    };
     try {
       const { data } = await apis.get(`staff/class/detail${id}`, config);
-      dispatch({ type: GET_DETAIL_CLASSROOM, payload: data });
+      dispatch({ type: actionType.GET_DETAIL_CLASSROOM, payload: data });
     } catch (error) {
-      dispatch({ type: FAILED_GET_DETAIL_CLASSROOM, error: error });
+      dispatch({
+        type: actionType.FAILED_GET_DETAIL_CLASSROOM,
+        payload: error.response.data,
+      });
     }
   };
 };

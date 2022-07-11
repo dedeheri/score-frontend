@@ -1,135 +1,159 @@
-import {
-  ADD_DATA_CLASSROOM,
-  DELETE_DATA_CLASSROM,
-  FAILED_ADD_DATA_CLASSROOM,
-  FAILED_DELETE_DATA_CLASSROM,
-  FAILED_GET_DATA_CLASSROM,
-  FAILED_UPDATE_CLASSROOM,
-  GET_DATA_CLASSROOM,
-  GET_DETAIL_CLASSROOM,
-  REMOVE_ADD_CLASSROOM,
-  REMOVE_DETAIL_CLASSROOM,
-  REQUEST_DETAIL_CLASSROOM,
-  SUCCESS_UPDATE_CLASSROOM,
-} from "../../action/action-type";
+import * as actionType from "../../actionType/actionTypeStaff";
 
 const initialState = {
-  data: [],
-  loadingBar: 0,
-  isFetching: true,
-  error: [],
+  UPDATE: {
+    message: [],
+    error: [],
+    fetching: false,
+  },
 
-  update: {},
-  dataUpdate: [],
-  isFetchingUpdate: true,
-  add: {
+  GET: {
+    data: [],
+    loadingBar: 0,
+    loading: true,
+    error: [],
+  },
+
+  DETAIL: {
+    loadingBar: 0,
+    loading: true,
+    data: [],
+    error: [],
+  },
+
+  ADD: {
     error: [],
     message: [],
-    refreshPage: null,
+    fetching: false,
+  },
+
+  DELETE: {
+    error: [],
+    message: [],
   },
 };
 
 const classRoomList = (state = initialState, action) => {
   switch (action.type) {
-    case GET_DATA_CLASSROOM: {
+    // get
+    case actionType.GET_DATA_CLASSROOM: {
       return {
         ...state,
-        loadingBar: 100,
-        isFetching: false,
-        data: action.payload,
+        GET: {
+          loadingBar: 100,
+          loading: false,
+          data: action.payload,
+        },
       };
     }
-    case FAILED_GET_DATA_CLASSROM: {
+    case actionType.FAILED_GET_DATA_CLASSROOM: {
       return {
         ...state,
-        loadingBar: 100,
-        isFetching: false,
-        data: action.payload,
+        GET: {
+          loadingBar: 100,
+          loading: false,
+          data: action.payload,
+        },
       };
     }
-    case ADD_DATA_CLASSROOM: {
+
+    // add
+    case actionType.START_ADD_DATA_CLASSROOM: {
       return {
         ...state,
-        loadingBar: 100,
-        isFetching: false,
-        add: { message: action.payload },
+        ADD: { fetching: true },
       };
     }
-    case REMOVE_ADD_CLASSROOM: {
+    case actionType.SUCCESS_ADD_DATA_CLASSROOM: {
       return {
         ...state,
-        add: {},
+        ADD: { message: action.payload, fetching: false },
       };
     }
-    case FAILED_ADD_DATA_CLASSROOM: {
+    case actionType.FAILED_ADD_DATA_CLASSROOM: {
       return {
         ...state,
-        loadingBar: 100,
-        isFetching: false,
-        add: { error: action.error },
+        ADD: { error: action.payload, fetching: false },
       };
     }
-    case DELETE_DATA_CLASSROM: {
+    case actionType.REMOVE_ADD_CLASSROOM: {
       return {
         ...state,
-        loadingBar: 100,
-        isFetching: false,
+        ADD: {},
       };
     }
-    case FAILED_DELETE_DATA_CLASSROM: {
+
+    // delete
+    case actionType.DELETE_DATA_CLASSROM: {
       return {
         ...state,
-        loadingBar: 100,
-        isFetching: false,
-        error: action.error,
+        DELETE: {
+          message: action.payload,
+        },
       };
     }
-    case REQUEST_DETAIL_CLASSROOM: {
+    case actionType.FAILED_DELETE_DATA_CLASSROM: {
       return {
         ...state,
-        loadingBar: 100,
-        isFetchingUpdate: true,
+        DELETE: {
+          error: action.payload,
+        },
       };
     }
-    case GET_DETAIL_CLASSROOM: {
+
+    // detail
+    case actionType.GET_DETAIL_CLASSROOM: {
       return {
         ...state,
-        loadingBar: 100,
-        isFetchingUpdate: false,
-        dataUpdate: action.payload,
+        DETAIL: {
+          loading: false,
+          loadingBar: 100,
+          data: action.payload,
+        },
       };
     }
-    case REMOVE_DETAIL_CLASSROOM: {
+    case actionType.FAILED_GET_DETAIL_CLASSROOM: {
       return {
         ...state,
-        loadingBar: 100,
-        isFetchingUpdate: false,
-        dataUpdate: {},
+        DETAIL: {
+          loading: false,
+          loadingBar: 100,
+          error: action.payload,
+        },
       };
     }
-    case FAILED_GET_DATA_CLASSROM: {
+    case actionType.REMOVE_DETAIL_CLASSROOM: {
       return {
         ...state,
-        loadingBar: 100,
-        isFetchingUpdate: false,
-        error: action.error,
+        DETAIL: {},
       };
     }
-    case SUCCESS_UPDATE_CLASSROOM: {
+
+    // update
+    case actionType.START_UPDATE_DATA_CLASSROOM: {
       return {
         ...state,
-        loadingBar: 100,
-        isFetchingUpdate: false,
-        update: action.payload,
+        UPDATE: {
+          fetching: true,
+        },
       };
     }
-    case FAILED_UPDATE_CLASSROOM: {
+    case actionType.SUCCESS_UPDATE_DATA_CLASSROOM: {
       return {
         ...state,
-        loadingBar: 100,
-        isFetchingUpdate: false,
-        refreshPage: false,
-        error: action.error,
+        UPDATE: {
+          fetching: false,
+          message: action.payload,
+        },
+      };
+    }
+    case actionType.FAILED_UPDATE_DATA_CLASSROOM: {
+      return {
+        ...state,
+        UPDATE: {
+          fetching: false,
+          error: action.payload,
+        },
       };
     }
     default:

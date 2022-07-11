@@ -1,19 +1,18 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import {
-  addClassRoom,
-  setClassRoomList,
-  setTeacher,
-} from "../../../context/action/staff-action";
+import { addClassRoom, setTeacher } from "../../../context/action/staff-action";
 
-// ui
-import { Listbox, Transition } from "@headlessui/react";
+// icons
 import { SelectorIcon } from "@heroicons/react/solid";
+
+// components
+import { Listbox, Transition } from "@headlessui/react";
 import Input from "../../Input";
+import Spin from "../../Spin";
 import Button from "../../Button";
-import { REMOVE_ADD_CLASSROOM } from "../../../context/action/action-type";
-import { useLocation } from "react-router-dom";
+
+import * as actionType from "../../../context/actionType/actionTypeStaff";
 
 function AddClassItem({ setAddSlide }) {
   const dispatch = useDispatch();
@@ -22,7 +21,7 @@ function AddClassItem({ setAddSlide }) {
   } = useSelector((state) => state.teacher);
 
   const {
-    add: { message, error },
+    ADD: { message, error, fetching },
   } = useSelector((state) => state.classRoomList);
 
   const [classRoom, setClassRoom] = useState("");
@@ -41,24 +40,16 @@ function AddClassItem({ setAddSlide }) {
     dispatch(addClassRoom(homeRoomTeacher, classRoom));
   };
 
-  // re-call api
-  const { search } = useLocation();
-  console.log(search);
   useEffect(() => {
     if (message?.message?.length > 0) {
       setAddSlide(false);
     }
-    dispatch(setClassRoomList(search));
   }, [message]);
 
   // remove data post in state when success
   useEffect(() => {
-    return () => {
-      dispatch({ type: REMOVE_ADD_CLASSROOM });
-    };
+    return () => dispatch({ type: actionType.REMOVE_ADD_CLASSROOM });
   }, []);
-
-  console.log(error);
 
   return (
     <Fragment>
@@ -82,7 +73,13 @@ function AddClassItem({ setAddSlide }) {
             </div>
             <Listbox.Button className="relative h-11 w-full py-2 pl-3 pr-10 text-left bg-white rounded-lg border cursor-default focus:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-white focus-visible:ring-offset-orange-300 focus-visible:ring-offset-2 focus-visible:border-indigo-500 sm:text-sm">
               <span className="block truncate">
-                {isFetching ? "Loading..." : homeRoomTeacher}
+                {isFetching ? (
+                  <div className="animate-pulse">
+                    <div className="bg-gray-100 h-6 w-1/2 rounded-lg " />
+                  </div>
+                ) : (
+                  homeRoomTeacher
+                )}
               </span>
               <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                 <SelectorIcon
@@ -132,8 +129,14 @@ function AddClassItem({ setAddSlide }) {
           placeholder={"Kelas"}
           onChange={(e) => setClassRoom(e.target.value)}
         />
-        <div className="flex justify-end mt-10">
-          <Button width={"md:w-52 w-full"} title="Tambah" />
+        <div className="flex justify-end ">
+          <div className="md:w-52 w-full">
+            {fetching ? (
+              <Spin />
+            ) : (
+              <Button width={"md:w-52 w-full"} title="Tambah" />
+            )}
+          </div>
         </div>
       </form>
     </Fragment>

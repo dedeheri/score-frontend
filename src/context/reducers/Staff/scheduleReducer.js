@@ -12,6 +12,8 @@ import {
   REQUEST_DETAIL_SCHEDULE,
 } from "../../action/action-type";
 
+import * as actionType from "../../actionType/actionTypeStaff";
+
 const initialState = {
   getData: {
     data: {},
@@ -25,68 +27,92 @@ const initialState = {
     slide: true,
   },
 
+  GET: {
+    data: [],
+    error: [],
+    loadingBar: 0,
+    loading: true,
+  },
+
   data: [],
   error: [],
   loadingBar: 0,
   isFetching: true,
   refreshPage: null,
   dataUpdate: [],
+
+  ADD: {
+    message: [],
+    error: [],
+    slide: true,
+    fetching: false,
+  },
 };
 
 const schedule = (state = initialState, action) => {
   switch (action.type) {
-    case GET_DATA_SCHEDULE: {
+    // get
+    case actionType.GET_DATA_SCHEDULE: {
       return {
         ...state,
-        loadingBar: 100,
-        isFetching: false,
-        getData: {
-          ...state,
+        GET: {
+          loadingBar: 100,
+          loading: false,
           data: action.payload,
-          page: action.page,
         },
       };
     }
-    case FAILED_GET_DATA_SCHEDULE: {
+    case actionType.FAILED_GET_DATA_SCHEDULE: {
       return {
         ...state,
-        isFetching: false,
-        loadingBar: 100,
-        getData: {
-          ...state,
-          error: action.error,
+        GET: {
+          loadingBar: 100,
+          loading: false,
+          error: action.payload,
         },
       };
     }
-    case ADD_SCHEDULE: {
+
+    // add
+    case actionType.START_ADD_SCHEDULE: {
       return {
         ...state,
-        postData: {
+        ADD: {
+          fetching: true,
+        },
+      };
+    }
+    case actionType.ADD_SCHEDULE: {
+      return {
+        ...state,
+        isFetching: true,
+        GET: { loading: true },
+        ADD: {
           message: action.payload,
+          fetching: false,
           slide: false,
         },
-        isFetching: false,
-        loadingBar: 100,
-        refreshPage: true,
       };
     }
-    case REMOVE_ADD_SCHEDULE: {
+
+    case actionType.FAILED_ADD_SCHEDULE: {
       return {
         ...state,
-        postData: {},
-      };
-    }
-    case FAILED_ADD_SCHEDULE: {
-      return {
-        ...state,
-        isFetching: false,
-        loadingBar: 100,
-        postData: {
+        ADD: {
           error: action.payload,
-          slide: true,
+          fetching: false,
+          slide: false,
         },
       };
     }
+    case actionType.REMOVE_ADD_SCHEDULE: {
+      return {
+        ...state,
+        ADD: {},
+      };
+    }
+
+    // delete
     case DELETE_SCHEDULE: {
       return {
         ...state,

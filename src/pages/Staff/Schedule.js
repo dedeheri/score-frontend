@@ -23,13 +23,7 @@ import NoData from "../../components/NoData";
 
 function Schedule() {
   const {
-    getData: {
-      data: dataSchedule,
-      page: { page },
-    },
-
-    isFetching,
-    loadingBar,
+    GET: { data, loading, loadingBar },
   } = useSelector((state) => state.schedule);
 
   const on = true;
@@ -38,19 +32,19 @@ function Schedule() {
 
   useEffect(() => {
     dispatch(setSchedule(search));
-  }, [search]);
+  }, [dispatch, search]);
 
   const [scheduleList, setScheduleList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    const filterSearch = dataSchedule?.data?.filter((fill) => {
+    const filterSearch = data?.result?.filter((fill) => {
       return fill.teacherId?.fullName
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
     });
     setScheduleList(filterSearch);
-  }, [dataSchedule, searchTerm]);
+  }, [data, searchTerm]);
 
   const columnName = [
     "Kode Jadwal",
@@ -84,7 +78,7 @@ function Schedule() {
         </div>
       </div>
 
-      {isFetching ? (
+      {loading ? (
         <TableSkeleton />
       ) : scheduleList?.length === 0 ? (
         <NoData />
@@ -92,7 +86,7 @@ function Schedule() {
         <div className="mt-10 ">
           <Table columnName={columnName} data={scheduleList} on={on} />
           <div className="mt-3">
-            <Pagination page={page} />
+            <Pagination page={data?.page} />
           </div>
         </div>
       )}

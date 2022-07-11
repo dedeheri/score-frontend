@@ -1,19 +1,16 @@
 import { useDispatch } from "react-redux";
-import {
-  setClassRoomList,
-  setDeleteClassRoom,
-} from "../context/action/staff-action";
-import { createSearchParams, useLocation, useNavigate } from "react-router-dom";
+import { setDeleteClassRoom } from "../context/action/staff-action";
+import { createSearchParams, useNavigate } from "react-router-dom";
 
 // UI
 import { FiEdit3, FiTrash } from "react-icons/fi";
 import { confirmAlert } from "react-confirm-alert";
 
-function TableClass({ coulums, list }) {
+function TableClass({ list }) {
   const dispatch = useDispatch((state) => state.clasRoomList);
   const navigate = useNavigate();
 
-  const { search } = useLocation();
+  const coulums = ["Kode Kelas", "Kelas", "Wali Kelas"];
 
   const handleDelete = (id, classRoom) => {
     confirmAlert({
@@ -24,7 +21,6 @@ function TableClass({ coulums, list }) {
           label: "Yes",
           onClick: () => {
             dispatch(setDeleteClassRoom(id));
-            dispatch(setClassRoomList(search));
           },
         },
         {

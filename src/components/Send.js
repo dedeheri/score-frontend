@@ -1,8 +1,8 @@
-function Spin({ width }) {
+import React from "react";
+
+function Send() {
   return (
-    <div
-      className={`${width} flex justify-center px-9 bg-gray-600 rounded-xl hover:bg-gray-600 transition duration-300`}
-    >
+    <div className="w-full flex justify-center px-9 bg-gray-600 rounded-xl hover:bg-gray-600 transition duration-300">
       <button
         disabled
         className="cursor-not-allowed text-white h-11 flex items-center"
@@ -27,10 +27,10 @@ function Spin({ width }) {
             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
           ></path>
         </svg>
-        Loading
+        Sedang mengirim
       </button>
     </div>
   );
 }
 
-export default Spin;
+export default Send;

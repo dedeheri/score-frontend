@@ -4,7 +4,6 @@ import CardSkeleton from "../../components/CardSkeleton";
 import TableSkeleton from "../../components/TableSkeleton";
 import { useDispatch, useSelector } from "react-redux";
 import { setHome } from "../../context/action/staff-action";
-import LoadingBar from "react-top-loading-bar";
 import TableSchedule from "../../components/TableSchedule";
 import Grid from "../../components/Grid";
 import NoData from "../../components/NoData";
@@ -23,8 +22,6 @@ function Home() {
 
   // tables
   const columnName = ["Kode", "Guru", "Kelas", "Pelajaran", "Hari", "Waktu"];
-
-  console.log(aktivityList?.result?.map((c) => c.schedule.length === 0));
 
   return (
     <Grid loadingBarValue={loadingBar}>

@@ -22,16 +22,16 @@ function Student() {
 
   useEffect(() => {
     dispatch(getLoadUserStudent());
-    return () => {
-      dispatch({ type: REMOVE_DATA_USER });
-    };
-  }, []);
-
-  useEffect(() => {
     Cookies.get("secure-To") &&
     Cookies.get("secure-2nd") == objectHash("Student")
       ? setProtec(true)
       : setProtec(false);
+
+    if (error === "Wrong Token") window.location.reload();
+  }, [dispatch, error]);
+
+  useEffect(() => {
+    return () => dispatch({ type: REMOVE_DATA_USER });
   }, []);
 
   return (

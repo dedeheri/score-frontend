@@ -22,7 +22,10 @@ function TableSchedule({ data, columnName }) {
         <tbody>
           {data?.result?.map((c) =>
             c.schedule.map((sub) => (
-              <tr className="transition border-b duration-300 hover:bg-gray-100 text-black ">
+              <tr
+                key={sub._id}
+                className="transition border-b duration-300 hover:bg-gray-100 text-black "
+              >
                 <td className="text-md whitespace-nowrap px-3 p-1">
                   {sub.codeClass}
                 </td>

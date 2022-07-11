@@ -62,8 +62,6 @@ function Schedule() {
   ];
   const [addSlide, setAddSlide] = useState(false);
 
-  console.log(scheduleList?.length === 0);
-
   return (
     <Grid loadingBarValue={loadingBar}>
       <div className="flex justify-between items-center">

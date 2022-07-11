@@ -7,7 +7,6 @@ import Home from "../pages/Staff/Home";
 import Schedule from "../pages/Staff/Schedule";
 import { useDispatch, useSelector } from "react-redux";
 import objectHash from "object-hash";
-import LoadingBar from "react-top-loading-bar";
 import Teacher from "../pages/Staff/Teacher";
 import DetailTeacher from "../pages/Staff/DetailTeacher";
 import { setLoadUser } from "../context/action/user-load-action";
@@ -30,51 +29,49 @@ function Staff() {
   const { error } = useSelector((state) => state.users);
 
   useEffect(() => {
-    dispatch(setLoadUser(Cookies.get("uid")));
+    dispatch(setLoadUser());
     Cookies.get("secure-To") && Cookies.get("secure-2nd") == objectHash("Staff")
       ? setAuthenticated(true)
       : setAuthenticated(false);
 
-    return () => {
-      dispatch({ type: "REMOVE_DATA_USER" });
-    };
+    if (error === "Wrong Token") window.location.reload();
+  }, [dispatch, error]);
+
+  useEffect(() => {
+    return () => dispatch({ type: "REMOVE_DATA_USER" });
   }, []);
 
-  return (
-    <>
-      {authenticated ? (
-        error ? (
-          <Forbidden error={error} />
-        ) : (
-          <>
-            <Navbar menu={menu} setMenu={setMenu} />
-            <Container>
-              <Sidebar menu={menu} setMenu={setMenu}>
-                <SidebarItem />
-              </Sidebar>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="schedule" element={<Schedule />} />
-                <Route path="teacher" element={<Teacher />} />
-                <Route path="teacher/update" element={<UpdateTeacher />} />
-                <Route path="teacher/detail" element={<DetailTeacher />} />
-                <Route path="schedule/update" element={<Update />} />
-                <Route path="student" element={<Students />} />
-                <Route path="student/detail" element={<DetailStudent />} />
-                <Route path="student/update" element={<UpdateStudent />} />
-                <Route path="class" element={<ClassList />} />
-                <Route path="class/update" element={<UpdateClass />} />
-                <Route path="account" element={<Account />} />
-              </Routes>
-            </Container>
-          </>
-        )
-      ) : (
-        <Routes>
-          <Route path="*" element={<Navigate to={"/"} />}></Route>
-        </Routes>
-      )}
-    </>
+  return authenticated ? (
+    error ? (
+      <Forbidden error={error} />
+    ) : (
+      <>
+        <Navbar menu={menu} setMenu={setMenu} />
+        <Container>
+          <Sidebar menu={menu} setMenu={setMenu}>
+            <SidebarItem />
+          </Sidebar>
+          <Routes>
+            <Route index path="/" element={<Home />} />
+            <Route path="schedule" element={<Schedule />} />
+            <Route path="teacher" element={<Teacher />} />
+            <Route path="teacher/update" element={<UpdateTeacher />} />
+            <Route path="teacher/detail" element={<DetailTeacher />} />
+            <Route path="schedule/update" element={<Update />} />
+            <Route path="student" element={<Students />} />
+            <Route path="student/detail" element={<DetailStudent />} />
+            <Route path="student/update" element={<UpdateStudent />} />
+            <Route path="class" element={<ClassList />} />
+            <Route path="class/update" element={<UpdateClass />} />
+            <Route path="account" element={<Account />} />
+          </Routes>
+        </Container>
+      </>
+    )
+  ) : (
+    <Routes>
+      <Route path="*" element={<Navigate to={"/"} />} />
+    </Routes>
   );
 }
 

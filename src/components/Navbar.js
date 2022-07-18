@@ -68,12 +68,6 @@ function Navbar({ menu, setMenu }) {
                       <Menu.Item>
                         <div className=" cursor-pointer rounded-md w-full px-2 py-2 text-md">
                           <h1
-                            onClick={() => navigate("me")}
-                            className="font-base pl-2 hover:bg-gray-100 rounded-xl p-1"
-                          >
-                            Profil
-                          </h1>
-                          <h1
                             onClick={handleLogOut}
                             className="font-base pl-2 hover:bg-gray-100 rounded-xl p-1"
                           >

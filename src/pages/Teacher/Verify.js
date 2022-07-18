@@ -2,31 +2,30 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import AuthGrid from "../../components/AuthGrid";
-import Back from "../../components/Back";
 import Button from "../../components/Button";
 import Input from "../../components/Input";
 import InputPassword from "../../components/InputPassword";
-import { setVerifyNextStep } from "../../context/action/login-action";
+import Spin from "../../components/Spin";
+import { setVerifyNextStep } from "../../context/action/teacher";
+
 function Verify() {
   const dispatch = useDispatch();
   const {
-    verifyUsers: { errorNextStep: error, errorAccountHashReady },
+    NEXT_REGISTRATION_TEACHER: { fetching, error },
   } = useSelector((state) => state.authorization);
   const { search } = useLocation();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
-  const [errorPassword, setErrorPassword] = useState("");
 
   const router = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (password !== repeatPassword) {
-      setErrorPassword("Password do not match");
-    }
 
-    dispatch(setVerifyNextStep(search, email, password, router));
+    dispatch(
+      setVerifyNextStep(search, email, password, repeatPassword, router)
+    );
   };
 
   return (
@@ -35,14 +34,18 @@ function Verify() {
         onSubmit={handleSubmit}
         className="flex flex-col my-10 space-y-4 items-center"
       >
-        {errorPassword && <span className="text-red-500">{errorPassword}</span>}
-        {errorAccountHashReady && (
-          <span className="text-red-500">{errorAccountHashReady}</span>
+        {error?.message && (
+          <h1 className="font-base text-red-500 text-xl bg-red-100 p-1 w-full  rounded-md">
+            {error?.message}
+          </h1>
         )}
 
-        {error && (
-          <span className="text-red-500">{error.map(({ msg }) => msg)}</span>
-        )}
+        {error?.validation &&
+          error?.validation?.map(({ msg }, i) => (
+            <div key={i} className="bg-red-100 p-1 rounded-md w-full">
+              <h1 className="font-base text-red-500 text-xl">{msg}</h1>
+            </div>
+          ))}
 
         <Input
           title={"Email"}
@@ -62,12 +65,11 @@ function Verify() {
           onChange={(e) => setRepeatPassword(e.target.value)}
         />
 
-        <Button width={"w-full"} title={"Kirim"} />
-        <Back
-          onClick={() => router("/")}
-          width={"w-full"}
-          title={"Kembali Ke Login"}
-        />
+        {fetching ? (
+          <Spin width={"w-full"} />
+        ) : (
+          <Button width={"w-full"} title={"Kirim"} />
+        )}
       </form>
     </AuthGrid>
   );

@@ -549,8 +549,7 @@ export const registrationStaff = (
   province,
   city,
   street,
-  postelCode,
-  navigate
+  postelCode
 ) => {
   return async (dispatch) => {
     try {
@@ -571,10 +570,70 @@ export const registrationStaff = (
       );
       dispatch({ type: SUCCESS_REGISTRASION_STAFF, payload: data });
       toast.success("Berhasil Buat Akun");
-      navigate("/");
+      if (data?.message === "Success") {
+        setInterval(() => {
+          window.location.href = "/";
+        }, 3000);
+      }
     } catch (error) {
       dispatch({
         type: FAILED_REGISTRASION_STAFF,
+        payload: error.response.data,
+      });
+    }
+  };
+};
+
+export const detailAccount = (param) => {
+  return async (dispatch) => {
+    try {
+      const { data } = await apis.get(`/staff/account/detail${param}`, config);
+      dispatch({ type: actionType.GET_DETAIL_ACCOUNT, payload: data });
+    } catch (error) {
+      dispatch({
+        type: actionType.FAILED_DETAIL_ACCOUNT,
+        payload: error.response.data,
+      });
+    }
+  };
+};
+
+export const updatePasswordAccount = (password, repeatPassword, param) => {
+  return async (dispatch) => {
+    try {
+      dispatch({ type: actionType.START_UPDATE_PASSWORD });
+      const { data } = await apis.put(
+        `/staff/account/update${param}`,
+        { password, repeatPassword },
+        config
+      );
+      dispatch({ type: actionType.SUCCESS_UPDATE_PASSWORD, payload: data });
+      toast.success(data?.message);
+
+      if (data?.message) {
+        setInterval(() => {
+          window.location.href = "/staff/account?sort=Staff";
+        }, [1000]);
+      }
+    } catch (error) {
+      dispatch({
+        type: actionType.FAILED_UPDATE_PASSWORD,
+        payload: error.response.data,
+      });
+    }
+  };
+};
+
+export const deleteAccount = (id) => {
+  return async (dispatch) => {
+    try {
+      const { data } = await apis.delete(`/staff/account/` + id, config);
+      dispatch({ type: actionType.SUCCESS_DELETE_ACCOUNT, payload: data });
+      toast.success(data.message);
+    } catch (error) {
+      toast.error(error.response.data.message);
+      dispatch({
+        type: actionType.FAILED_DELETE_ACCOUNT,
         payload: error.response.data,
       });
     }

@@ -1,8 +1,4 @@
 import {
-  VERIFY_TEACHER,
-  FAILED_VERIFY_TEACHER,
-  VERIFY_TEACHER_NEXT_STEP,
-  FAILED_VERIFY_TEACHER_NEXT_STEP,
   LOGIN_FAILED,
   LOGIN_SUCCESS,
   LOGIN_START,
@@ -29,20 +25,15 @@ const initialState = {
     error: [],
   },
 
-  verifyUsers: {
-    data: [],
-    error: [],
-    loadingBar: 0,
-    next: false,
-    isFetching: true,
-    errorNextStep: [],
-    errorAccountHashReady: [],
-  },
-
   REGISTRATION_TEACHER: {
     data: [],
     error: [],
     next: false,
+    fetching: false,
+  },
+  NEXT_REGISTRATION_TEACHER: {
+    data: [],
+    error: [],
     fetching: false,
   },
   REGISTRATION_STUDENT: {
@@ -167,45 +158,32 @@ const authorization = (state = initialState, action) => {
       };
     }
 
-    case VERIFY_TEACHER: {
+    // input password teacher
+    case actionTypeTeacher.START_INPUT_PASSWORD: {
       return {
         ...state,
-        verifyUsers: {
-          isFetching: false,
-          loadingBar: 100,
+        NEXT_REGISTRATION_TEACHER: {
+          fetching: true,
+        },
+      };
+    }
+
+    case actionTypeTeacher.SUCCESS_INPUT_PASSWORD: {
+      return {
+        ...state,
+        NEXT_REGISTRATION_TEACHER: {
           data: action.payload,
-          next: true,
+          fetching: false,
         },
       };
     }
-    case FAILED_VERIFY_TEACHER: {
+
+    case actionTypeTeacher.FAILED_INPUT_PASSWORD: {
       return {
         ...state,
-        verifyUsers: {
-          isFetching: false,
-          loadingBar: 100,
-          error: action.error,
-        },
-      };
-    }
-    case VERIFY_TEACHER_NEXT_STEP: {
-      return {
-        ...state,
-        verifyUsers: {
-          isFetching: false,
-          loadingBar: 100,
-          data: action.payload,
-        },
-      };
-    }
-    case FAILED_VERIFY_TEACHER_NEXT_STEP: {
-      return {
-        ...state,
-        verifyUsers: {
-          isFetching: false,
-          loadingBar: 100,
-          errorNextStep: action.error,
-          errorAccountHashReady: action.errorAccountHashReady,
+        NEXT_REGISTRATION_TEACHER: {
+          error: action.payload,
+          fetching: false,
         },
       };
     }

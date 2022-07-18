@@ -1,4 +1,3 @@
-import logo from "../../assets/images/logo.png";
 import Button from "../../components/Button";
 import Spin from "../../components/Spin";
 import Input from "../../components/Input";
@@ -6,7 +5,6 @@ import { useNavigate, createSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
-import { verifyTeacherSignIn } from "../../context/action/login-action";
 import AuthGrid from "../../components/AuthGrid";
 import { verify } from "../../context/action/teacher";
 import { RESET_VERIFY_TEACHER } from "../../context/actionType/actionTypeTeacher";
@@ -102,7 +100,7 @@ function Register() {
         {next ? (
           <Button width={"w-full"} onClick={handleSearch} title={"Next"} />
         ) : fetching ? (
-          <Spin />
+          <Spin width={"w-full"} />
         ) : (
           <Button width={"w-full"} onClick={check} title={"Check"} />
         )}

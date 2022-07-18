@@ -36,6 +36,14 @@ function Login() {
               </h1>
             </div>
           )}
+
+          {error?.validation &&
+            error?.validation?.map(({ msg }, i) => (
+              <div key={i} className="bg-red-100 p-1 rounded-md w-full">
+                <h1 className="font-base text-red-500 text-xl">{msg}</h1>
+              </div>
+            ))}
+
           <Input
             width={"w-full"}
             type={"number"}

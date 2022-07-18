@@ -21,12 +21,17 @@ import UpdateStudent from "../pages/Staff/UpdateStudent";
 import Account from "../pages/Staff/Account";
 import SidebarItem from "../components/SidebarItem";
 import Forbidden from "../components/Forbidden";
+import UpdatePassword from "../pages/Staff/UpdatePassword";
 
 function Staff() {
   const [menu, setMenu] = useState(false);
   const dispatch = useDispatch();
   const [authenticated, setAuthenticated] = useState(true);
   const { error } = useSelector((state) => state.users);
+
+  const {
+    DELETE_ACCOUNT: { data: messageDelete },
+  } = useSelector((state) => state.account);
 
   useEffect(() => {
     dispatch(setLoadUser());
@@ -35,7 +40,7 @@ function Staff() {
       : setAuthenticated(false);
 
     if (error === "Wrong Token") window.location.reload();
-  }, [dispatch, error]);
+  }, [dispatch, error, messageDelete]);
 
   useEffect(() => {
     return () => dispatch({ type: "REMOVE_DATA_USER" });
@@ -64,6 +69,7 @@ function Staff() {
             <Route path="class" element={<ClassList />} />
             <Route path="class/update" element={<UpdateClass />} />
             <Route path="account" element={<Account />} />
+            <Route path="account/reset" element={<UpdatePassword />} />
           </Routes>
         </Container>
       </>

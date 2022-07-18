@@ -38,6 +38,40 @@ export const verify = (identityNumber) => {
   };
 };
 
+export const setVerifyNextStep = (search, email, password, repeatPassword) => {
+  return async (dispatch) => {
+    try {
+      dispatch({ type: actionType.START_INPUT_PASSWORD });
+      const { data } = await apis.post(
+        `/signup/teacher/next${search}`,
+        {
+          email,
+          password,
+          repeatPassword,
+        },
+        config
+      );
+      dispatch({
+        type: actionType.SUCCESS_INPUT_PASSWORD,
+        payload: data,
+      });
+      toast.success("Berhasil membuat akun");
+
+      if (data?.message === "Success") {
+        setInterval(() => {
+          window.location.href = "/";
+        }, 3000);
+      }
+    } catch (error) {
+      console.log(error.response.data);
+      dispatch({
+        type: actionType.FAILED_INPUT_PASSWORD,
+        payload: error.response.data,
+      });
+    }
+  };
+};
+
 export const getScore = (search) => {
   return async (dispatch) => {
     const config = {

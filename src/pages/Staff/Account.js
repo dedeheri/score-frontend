@@ -15,16 +15,21 @@ import TableAccountList from "../../components/TableAccountList";
 function Account() {
   const dispatch = useDispatch();
   const location = useLocation();
-  const { data, isFetching, loadingBar, error, success } = useSelector(
-    (state) => state.account
-  );
+  const {
+    data,
+    isFetching,
+    loadingBar,
+    error,
+    success,
+    DELETE_ACCOUNT: { data: messageDelete, error: messageError },
+  } = useSelector((state) => state.account);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [dataSearch, setDataSearch] = useState([]);
 
   useEffect(() => {
     dispatch(setAccount(location.search));
-  }, [location.search, success]);
+  }, [location.search, success, messageDelete]);
 
   useEffect(() => {
     const filterd = data?.users?.filter((e) => {
@@ -32,7 +37,7 @@ function Account() {
     });
 
     setDataSearch(filterd);
-  }, [data, searchTerm]);
+  }, [data, searchTerm, messageDelete, messageError]);
 
   const router = useNavigate();
   const handleQueryTeacher = (props) => {

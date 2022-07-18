@@ -75,7 +75,7 @@ function AddScheduleItem({ setAddSlide }) {
         {error && (
           <div className="space-y-1">
             {error.map((err, i) => (
-              <div className="flex flex-col " key={i}>
+              <div className="flex flex-col" key={i}>
                 <h1 className="bg-red-200 p-1 rounded-lg text-black font-medium">
                   {err.msg}
                 </h1>

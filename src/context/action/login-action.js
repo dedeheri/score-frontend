@@ -1,51 +1,15 @@
 import Cookies from "js-cookie";
 import objectHash from "object-hash";
-import {
-  FAILED_VERIFY_TEACHER,
-  FAILED_VERIFY_TEACHER_NEXT_STEP,
-  LOGIN_FAILED,
-  VERIFY_TEACHER,
-  VERIFY_TEACHER_NEXT_STEP,
-  LOGIN_SUCCESS,
-  LOGIN_START,
-} from "./action-type";
+import { LOGIN_FAILED, LOGIN_SUCCESS, LOGIN_START } from "./action-type";
 import apis from "../../api/apis";
 
-export const verifyTeacherSignIn = (identityNumber) => {
-  return async (dispatch) => {
-    try {
-      const config = {
-        headers: {
-          "content-type": "application/json",
-        },
-      };
-      const { data } = await apis.post(
-        `/signup/teacher`,
-        {
-          identityNumber,
-        },
-        config
-      );
-      dispatch({ type: VERIFY_TEACHER, payload: data });
-    } catch (error) {
-      dispatch({
-        type: FAILED_VERIFY_TEACHER,
-        error: error.response.data,
-      });
-    }
-  };
-};
+import { config } from "../../config/headers";
 
 export const setLogin = (identityNumber, password, navigate) => {
   return async (dispatch) => {
     try {
       dispatch({ type: LOGIN_START });
 
-      const config = {
-        headers: {
-          "Content-type": "application/json",
-        },
-      };
       const { data } = await apis.post(
         "/signin",
         {
@@ -77,46 +41,6 @@ export const setLogin = (identityNumber, password, navigate) => {
         type: LOGIN_FAILED,
         payload: error.response.data,
       });
-    }
-  };
-};
-
-export const setVerifyNextStep = (search, email, password, router) => {
-  return async (dispatch) => {
-    const config = {
-      headers: {
-        "Content-type": "application/json",
-      },
-    };
-
-    try {
-      const { data } = await apis.post(
-        `/signup/teacher/next${search}`,
-        {
-          email,
-          password,
-        },
-        config
-      );
-
-      if (data.message === "Success") {
-        router("/");
-      }
-      dispatch({ type: VERIFY_TEACHER_NEXT_STEP, payload: data });
-    } catch (error) {
-      const er = error.response.data.errors;
-
-      if (er) {
-        dispatch({
-          type: FAILED_VERIFY_TEACHER_NEXT_STEP,
-          error: er,
-        });
-      } else {
-        dispatch({
-          type: FAILED_VERIFY_TEACHER_NEXT_STEP,
-          errorAccountHashReady: error.response.data.message,
-        });
-      }
     }
   };
 };

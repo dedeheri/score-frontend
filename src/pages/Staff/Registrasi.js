@@ -43,8 +43,7 @@ function Registrasi() {
         province,
         city,
         street,
-        postelCode,
-        navigate
+        postelCode
       )
     );
   };
@@ -57,10 +56,18 @@ function Registrasi() {
         onSubmit={addStaff}
         className="flex flex-col space-y-4 items-center "
       >
+        {error?.message && (
+          <h1 className="bg-red-200 p-1  w-full rounded-lg text-black font-medium">
+            {error?.message}
+          </h1>
+        )}
         {error?.validation && (
-          <div className="bg-red-100 p-1 rounded-md w-full ">
+          <div className="space-y-1 w-full">
             {error?.validation?.map(({ msg }, i) => (
-              <h1 key={i} className="font-base text-red-500 text-xl">
+              <h1
+                key={i}
+                className="bg-red-200 p-1 rounded-lg text-black font-medium"
+              >
                 {msg}
               </h1>
             ))}
@@ -123,7 +130,11 @@ function Registrasi() {
             onChange={(e) => setPostelCode(e.target.value)}
           />
         </div>
-        {fetching ? <Spin /> : <Button width={" w-full"} title={"Kirim"} />}
+        {false ? (
+          <Spin width={" w-full"} />
+        ) : (
+          <Button onClick={() => addStaff} width={" w-full"} title={"Kirim"} />
+        )}
         <Back
           width={" w-full"}
           title={"Kembali ke Login"}
